@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+	<plugin-info>
+		<description>${project.description}</description>
+		<version>${project.version}</version>
+		<vendor name="${project.organization.name}" url="${project.organization.url}"/>
+		<param name="plugin-icon">images/pluginIcon.png</param>
+		<param name="plugin-logo">images/pluginLogo.png</param>
+	</plugin-info>
+  
+	<ao key="ao-module">
+		<description>The module configuring the Active Objects service used by this plugin</description>
+		<entity>com.example.plugins.tutorial.jira.customfields.MyEntity</entity>
+	</ao>
+	
+	<compenent-import key="ao" name="Active Objects service" interface="com.atlassian.activeobjects.external.ActiveObjects">
+			<description>Component to access Active Objects functionality from the plugin</description>
+	</compenent-import>
+	<!--
+	<compenent-import key="ao" name="Active Objects service" interface="com.atlassian.user.EntityManager">
+			<description>Componenet to access Entity Manager stuff</description>
+	</compenent-import>
+	-->	
+	<component-import key="customFieldValuePersister" interface="com.atlassian.jira.issue.customfields.persistence.CustomFieldValuePersister"/>
+	<component-import key="GenericConfigManager" interface="com.atlassian.jira.issue.customfields.manager.GenericConfigManager" />
+	
+	<component key="my-entity-service" name="MyEntity Service" class="com.example.plugins.tutorial.jira.customfields.MyEntityServiceImpl"/>	
+		
+		<!-- add our i18n resource -->
+	<resource type="i18n" name="i18n" location="tutorial-jira-custom-field"/>
+	<!-- add our web resources -->
+	<web-resource key="tutorial-jira-custom-field-resources" name="tutorial-jira-custom-field Web Resources">
+		<dependency>com.atlassian.auiplugin:ajs</dependency>
+		<resource type="download" name="tutorial-jira-custom-field.css" location="/css/tutorial-jira-custom-field.css"/>
+		<resource type="download" name="tutorial-jira-custom-field.js" location="/js/tutorial-jira-custom-field.js"/>
+		<resource type="download" name="images/" location="/images"/>
+		<context>tutorial-jira-custom-field</context>
+  	</web-resource>
+		<customfield-type name="Money Custom Field" i18n-name-key="money-custom-field.name" key="money-custom-field" class="com.example.plugins.tutorial.jira.customfields.MoneyCustomField">
+		<description key="money-custom-field.description">The Money Custom Field Plugin</description>
+		<resource name="view" type="velocity" location="/templates/customfields/money-custom-field/view.vm"/>
+		<resource name="column-view" type="velocity" location="/templates/customfields/money-custom-field/view.vm"/>
+	</customfield-type>
+  
+  	<customfield-searcher key="money-searcher" name="Money Searcher"
+		class="com.atlassian.jira.issue.customfields.searchers.NumberRangeSearcher">
+		<description>Allow to search issues according to in progress counter
+		</description>
+		<resource type="velocity" name="search" location="templates/plugins/fields/edit-searcher/search-number-range.vm" />
+		<resource type="velocity" name="view" location="templates/plugins/fields/view-searcher/view-searcher-number-range.vm" />
+		<resource type="velocity" name="label" location="templates/plugins/fields/view-searcher/label-searcher-user.vm" />
+		<valid-customfield-type package="com.kubilay.cusfield" key="money-custom-field" />
+	</customfield-searcher>
+</atlassian-plugin>

@@ -1,0 +1,3 @@
+#foreach ($assignee_key in $assignees.keySet())
+    $assignee_key: $assignees.get($assignee_key) <br/>
+#end

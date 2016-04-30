@@ -7,8 +7,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.event.api.EventListener;
+import com.atlassian.jira.event.issue.IssueEvent;
+import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueFieldConstants;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.changehistory.ChangeHistory;
 import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
 import com.atlassian.jira.issue.customfields.SortableCustomField;
@@ -17,16 +21,28 @@ import com.atlassian.jira.issue.customfields.impl.FieldValidationException;
 import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.fields.layout.field.FieldLayoutItem;
 import com.atlassian.jira.issue.history.ChangeItemBean;
+import com.atlassian.jira.user.util.UserManager;
+
 //import com.atlassian.jira.component.ComponentAccessor;
+import static com.google.common.base.Preconditions.*;
+
+import com.example.plugins.tutorial.jira.customfields.IssueEntityService;
+
 
 
 
 public class MoneyCustomField extends CalculatedCFType implements SortableCustomField {
     private static final Logger log = LoggerFactory.getLogger(MoneyCustomField.class);
     private final ChangeHistoryManager changeHistoryManager;
-
-    public MoneyCustomField(final ChangeHistoryManager changeHistoryManager) {
+    private final IssueEntityService entityService;
+    private final IssueManager issueManager;
+    private final UserManager userManager;
+    public MoneyCustomField(final ChangeHistoryManager changeHistoryManager, IssueEntityService entity_service,
+    		IssueManager issueManager, UserManager userManager) {
+    	this.entityService = checkNotNull(entity_service);
     	this.changeHistoryManager = changeHistoryManager;
+    	this.issueManager = issueManager;
+    	this.userManager = userManager;
     }
 
 	@Override
@@ -61,10 +77,23 @@ public class MoneyCustomField extends CalculatedCFType implements SortableCustom
 	
 	@Override
 	public Map getVelocityParameters(Issue issue, CustomField field, FieldLayoutItem fieldLayoutItem) {
+		
 		Map map = super.getVelocityParameters(issue, field, fieldLayoutItem);
-		map.put("firstName", "Ali");
+
+		IssueEntity issueEntity;
+		issueEntity = entityService.getByIssueId(issue.getId());
+		if(issueEntity != null){
+			map.put("issue-key", issueManager.getIssueObject(issueEntity.getIssueId()).getKey());
+			map.put("creator-name" ,userManager.getUserByKey(issueEntity.getUserKey()).getName());
+			map.put("comment-count", issueEntity.getCommentCount());
+		}
+		else{
+			map.put("error", (String) "Error getting issue's data.");
+		}
+
 		
-		
+        
+        /*
 		List<ChangeItemBean> assignee_changes = changeHistoryManager.getChangeItemsForField(issue, IssueFieldConstants.ASSIGNEE);
 		Map<String, Integer> assignees = new HashMap<String, Integer>();
 
@@ -79,6 +108,9 @@ public class MoneyCustomField extends CalculatedCFType implements SortableCustom
 		}
 		
 		map.put("assignees", (HashMap) assignees);
+		*/
 		return map;
 	}
+
+
 }

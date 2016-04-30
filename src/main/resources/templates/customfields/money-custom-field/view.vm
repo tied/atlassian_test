@@ -1,3 +1,7 @@
-#foreach ($assignee_key in $assignees.keySet())
-    $assignee_key: $assignees.get($assignee_key) <br/>
+#if($error)
+	$error
+#else
+	Issue Key: $issue-key</br>
+	Reporter Name: $creator-name</br>
+	Comment Count: $comment-count</br>
 #end

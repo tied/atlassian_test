@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+	
 	<plugin-info>
 		<description>${project.description}</description>
 		<version>${project.version}</version>
@@ -11,23 +12,23 @@
   
 	<ao key="ao-module">
 		<description>The module configuring the Active Objects service used by this plugin</description>
-		<entity>com.example.plugins.tutorial.jira.customfields.MyEntity</entity>
+		<entity>com.example.plugins.tutorial.jira.customfields.IssueEntity</entity>
 	</ao>
 	
-	<compenent-import key="ao" name="Active Objects service" interface="com.atlassian.activeobjects.external.ActiveObjects">
+	<component-import key="ao" name="Active Objects service" interface="com.atlassian.activeobjects.external.ActiveObjects">
 			<description>Component to access Active Objects functionality from the plugin</description>
-	</compenent-import>
-	<!--
-	<compenent-import key="ao" name="Active Objects service" interface="com.atlassian.user.EntityManager">
-			<description>Componenet to access Entity Manager stuff</description>
-	</compenent-import>
-	-->	
+	</component-import>
+	<component-import key="eventPublisher" interface="com.atlassian.event.api.EventPublisher"/>
 	<component-import key="customFieldValuePersister" interface="com.atlassian.jira.issue.customfields.persistence.CustomFieldValuePersister"/>
 	<component-import key="GenericConfigManager" interface="com.atlassian.jira.issue.customfields.manager.GenericConfigManager" />
 	
-	<component key="my-entity-service" name="MyEntity Service" class="com.example.plugins.tutorial.jira.customfields.MyEntityServiceImpl"/>	
-		
-		<!-- add our i18n resource -->
+	
+	<component key="IssueEntityService" name="IssueEntity Service" class="com.example.plugins.tutorial.jira.customfields.IssueEntityServiceImpl"/>		
+	<component key="eventListener" class="com.example.plugins.tutorial.jira.customfields.MyIssueListener">
+        <description>Class that processes the incoming JIRA issue events.</description>
+    </component>	
+	
+	<!-- add our i18n resource -->
 	<resource type="i18n" name="i18n" location="tutorial-jira-custom-field"/>
 	<!-- add our web resources -->
 	<web-resource key="tutorial-jira-custom-field-resources" name="tutorial-jira-custom-field Web Resources">
@@ -52,4 +53,5 @@
 		<resource type="velocity" name="label" location="templates/plugins/fields/view-searcher/label-searcher-user.vm" />
 		<valid-customfield-type package="com.kubilay.cusfield" key="money-custom-field" />
 	</customfield-searcher>
+	
 </atlassian-plugin>
